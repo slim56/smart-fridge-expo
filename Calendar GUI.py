@@ -1,5 +1,6 @@
 import tkinter as tk
 import calendar
+import datetime
 
 class Reminder:
     def __init__(self, date, message):
@@ -27,8 +28,8 @@ class CalendarGUI:
         # create day labels
         days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         for i, day in enumerate(days):
-            label = tk.Label(master, text=day, font=("Arial", 12))
-            label.grid(row=1, column=i)
+            label = tk.Label(master, text=day, font=("Arial", 12), padx = 2)
+            label.grid(row=1, column=i,sticky="nsew")
 
         # create calendar days
         self.buttons = {}
@@ -36,7 +37,7 @@ class CalendarGUI:
             for day_num, day in enumerate(week):
                 if day != 0:
                     button = tk.Button(master, text=str(day), font=("Arial", 12))
-                    button.grid(row=week_num, column=day_num,padx=2, pady=2, sticky="nsew")
+                    button.grid(row=week_num, column=day_num, padx=2, pady=2, sticky="nsew")
                     button.bind("<Button-1>", self.select_date)
                     self.buttons[(day, week_num, day_num)] = button
 
@@ -44,9 +45,9 @@ class CalendarGUI:
         self.reminder_label = tk.Label(master, text="Reminder: ")
         self.reminder_label.grid(row=8, column=0)
         self.reminder_entry = tk.Entry(master)
-        self.reminder_entry.grid(row=8, column=1)
-        self.add_button = tk.Button(master, text="Add Reminder", command=self.add_reminder)
-        self.add_button.grid(row=8, column=2)
+        self.reminder_entry.grid(row=8, column=1,columnspan=2)
+        # self.add_button = tk.Button(master, text="Add Reminder", command=self.add_reminder)
+        # self.add_button.grid(row=8, column=2)
 
     def select_date(self, event):
         # unselect previous date
