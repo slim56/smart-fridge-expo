@@ -1,87 +1,90 @@
-import tkinter as tk
+from kivy.app import App
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+import kivy.properties as kyprops
 import calendar
-import datetime
 
 class Reminder:
     def __init__(self, date, message):
         self.date = date
         self.message = message
 
-class CalendarGUI:
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Calendar with Reminders")
+class CalendarGUI(GridLayout):
+    header = kyprops
+    reminder_label = kyprops
+    reminder_entry = kyprops
+    selected_date = None
+    reminders = {}
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.cols = 7
+        self.spacing = [2,2]
 
         # create calendar and set current date
         self.cal = calendar.Calendar()
         self.year = 2023 # you can change this to current year
         self.month = 4 # you can change this to current month
-        self.selected_date = None
-
-        # create reminder dictionary
-        self.reminders = {}
 
         # create calendar header
-        self.header = tk.Label(master, text=f"{calendar.month_name[self.month]} {self.year}", font=("Arial", 20))
-        self.header.grid(row=0, column=0, columnspan=7)
+        self.header = Label(text=f"{calendar.month_name[self.month]} {self.year}", font_size=20)
+        self.add_widget(self.header)
 
         # create day labels
         days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-        for i, day in enumerate(days):
-            label = tk.Label(master, text=day, font=("Arial", 12), padx = 2)
-            label.grid(row=1, column=i,sticky="nsew")
+        for day in days:
+            label = Label(text=day, font_size=12, size_hint_y=None, height=50)
+            self.add_widget(label)
 
         # create calendar days
-        self.buttons = {}
-        for week_num, week in enumerate(self.cal.monthdayscalendar(self.year, self.month), start=2):
-            for day_num, day in enumerate(week):
+        for week in self.cal.monthdayscalendar(self.year, self.month):
+            for day in week:
                 if day != 0:
-                    button = tk.Button(master, text=str(day), font=("Arial", 12))
-                    button.grid(row=week_num, column=day_num, padx=2, pady=2, sticky="nsew")
-                    button.bind("<Button-1>", self.select_date)
-                    self.buttons[(day, week_num, day_num)] = button
+                    button = Button(text=str(day), font_size=12, size_hint_y=None, height=50)
+                    button.bind(on_press=self.select_date)
+                    self.add_widget(button)
 
         # create reminder input
-        self.reminder_label = tk.Label(master, text="Reminder: ")
-        self.reminder_label.grid(row=8, column=0)
-        self.reminder_entry = tk.Entry(master)
-        self.reminder_entry.grid(row=8, column=1,columnspan=2)
-        # self.add_button = tk.Button(master, text="Add Reminder", command=self.add_reminder)
-        # self.add_button.grid(row=8, column=2)
+        self.reminder_label = Label(text="Reminder: ")
+        self.add_widget(self.reminder_label)
+        self.reminder_entry = Label()
+        self.add_widget(self.reminder_entry)
 
-    def select_date(self, event):
+    def select_date(self, instance):
         # unselect previous date
         if self.selected_date:
-            self.buttons[self.selected_date].config(relief=tk.RAISED)
+            self.selected_date.background_color = [1,1,1,1]
 
         # select new date
-        widget = event.widget
-        widget.config(relief=tk.SUNKEN)
-        day = int(widget["text"])
-        row, col = widget.grid_info()["row"]-2, widget.grid_info()["column"]
-        self.selected_date = (day, row, col)
+        instance.background_color = [0.5,0.5,1,1]
+        day = int(instance.text)
+        self.selected_date = instance
 
         # update header with selected date
         date = calendar.date(self.year, self.month, day)
-        self.header.config(text=date.strftime("%A, %B %d, %Y"))
+        self.header.text = date.strftime("%A, %B %d, %Y")
 
         # show reminders for selected date
         if self.selected_date in self.reminders:
             reminder_text = "\n".join(self.reminders[self.selected_date])
         else:
             reminder_text = "No reminders"
-        self.reminder_label.config(text=f"Reminders for {date.strftime('%B %d, %Y')}:")
-        self.reminder_entry.delete(0, tk.END)
-        self.reminder_entry.insert(0, reminder_text)
+        self.reminder_label.text = f"Reminders for {date.strftime('%B %d, %Y')}:"
+        self.reminder_entry.text = reminder_text
 
     def add_reminder(self):
         if self.selected_date:
-            reminder = self.reminder_entry.get()
+            reminder = self.reminder_entry.text
             if self.selected_date not in self.reminders:
                 self.reminders[self.selected_date] = []
             self.reminders[self.selected_date].append(reminder)
-            self.select_date(tk.Event())
+            self.select_date(self.selected_date)
 
-root = tk.Tk()
-app = CalendarGUI(root)
-root.mainloop()
+class CalendarApp(App):
+    def build(self):
+        return CalendarGUI()
+
+if __name__ == '__main__':
+    CalendarApp().run()
+
