@@ -5,10 +5,9 @@ from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import ScreenManager, Screen
-import kivy.properties as kyprops
-# from sms import *  # when I run the GUI the message sends while the GUI is loading up.
 import datetime
 import calendar
+from twilio.rest import Client
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
@@ -40,7 +39,7 @@ class MainScreen(Screen):
             text="Sensor 2",
             size_hint=(1, 0.5),
             bold=True,
-            background_color="blue",
+            background_color="red",
             background_normal=""
         )
         self.button_3.bind(on_press=self.on_button_3_click)
@@ -50,7 +49,7 @@ class MainScreen(Screen):
             text="Calendar",
             size_hint=(1, 0.5),
             bold=True,
-            background_color="green",
+            background_color="red",
             background_normal=""
         )
         self.button_4.bind(on_press=self.on_button_4_click)
@@ -60,15 +59,15 @@ class MainScreen(Screen):
 
     def on_button_2_click(self, instance):
         app = App.get_running_app()
-        app.screen_manager.current = "Sensor 1"
+        app.sm.current = "Sensor 1"
 
     def on_button_3_click(self, instance):
         app = App.get_running_app()
-        app.screen_manager.current = "Sensor 2"
+        app.sm.current = "Sensor 2"
 
     def on_button_4_click(self, instance):
         app = App.get_running_app()
-        app.screen_manager.current = "Calendar"
+        app.sm.current = "Calendar"
 
 class Sensor1(Screen):
     def __init__(self, **kwargs):
@@ -99,7 +98,7 @@ class Sensor1(Screen):
             text="Sensor 2",
             size_hint=(1, 0.5),
             bold=True,
-            background_color="blue",
+            background_color="red",
             background_normal=""
         )
         self.button_3.bind(on_press=self.on_button_3_click)
@@ -109,7 +108,7 @@ class Sensor1(Screen):
             text="Calendar",
             size_hint=(1, 0.5),
             bold=True,
-            background_color="green",
+            background_color="red",
             background_normal=""
         )
         self.button_4.bind(on_press=self.on_button_4_click)
@@ -118,16 +117,16 @@ class Sensor1(Screen):
         self.add_widget(self.layout)
 
     def on_button_1_click(self, instance):
-        app = App.get_runni1button_1g_app()
-        app.screen_manager.current = "MainScreen"
+        app = App.get_running_app()
+        app.sm.current = "MainScreen"
 
     def on_button_3_click(self, instance):
         app = App.get_running_app()
-        app.screen_manager.current = "Sensor 2"
+        app.sm.current = "Sensor 2"
 
     def on_button_4_click(self, instance):
         app = App.get_running_app()
-        app.screen_manager.current = "Calendar"
+        app.sm.current = "Calendar"
 
 class Sensor2(Screen):
     def __init__(self, **kwargs):
@@ -158,7 +157,7 @@ class Sensor2(Screen):
             text="Sensor 1",
             size_hint=(1, 0.5),
             bold=True,
-            background_color="blue",
+            background_color="red",
             background_normal=""
         )
         self.button_2.bind(on_press=self.on_button_2_click)
@@ -168,7 +167,7 @@ class Sensor2(Screen):
             text="Calendar",
             size_hint=(1, 0.5),
             bold=True,
-            background_color="green",
+            background_color="red",
             background_normal=""
         )
         self.button_4.bind(on_press=self.on_button_4_click)
@@ -177,16 +176,16 @@ class Sensor2(Screen):
         self.add_widget(self.layout)
 
     def on_button_1_click(self, instance):
-        app = App.get_runni1button_1g_app()
-        app.screen_manager.current = "MainScreen"
+        app = App.get_running_app()
+        app.sm.current = "MainScreen"
 
     def on_button_2_click(self, instance):
         app = App.get_running_app()
-        app.screen_manager.current = "Sensor 1"
+        app.sm.current = "Sensor 1"
 
     def on_button_4_click(self, instance):
         app = App.get_running_app()
-        app.screen_manager.current = "Calendar"
+        app.sm.current = "Calendar"
 
 class Reminder:
     def __init__(self, date, message):
@@ -194,79 +193,117 @@ class Reminder:
         self.message = message
 
 class calendarScreen(Screen):
-    header = kyprops
-    reminder_label = kyprops
-    reminder_entry = kyprops
-    selected_date = None
+    # header = kyprops
+    # reminder_label = kyprops
+    # reminder_entry = kyprops
+    # selected_date = None
     reminders = {}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-         # create calendar and set current date
-        self.cal = calendar.Calendar()
-        now = datetime.datetime.now()
-        self.year = now.year # you can change this to current year
-        self.month = now.month # you can change this to current month
-        self.selected_date = None
         self.layout = GridLayout()
         self.layout.cols = 7
-        self.spacing = [2,2]
+        self.layout.size_hint = (0.6, 0.7)
+        self.layout.pos_hint = {"center_x": 0.5, "center_y": 0.5}
+        self.layout.spacing = [4,4]
 
-        # shows the current month
-        self.header = Label(text=f"{calendar.month_name[self.month]} {self.year}")
-        self.add_widget(self.header)
-        self.layout.add_widget(Image(source="SMART FRIDGE.PNG"))
+        now = datetime.datetime.now()
+        year = now.year
+        month = now.month
+        days_in_month = calendar.monthrange(year, month)[1]
+        month_name = calendar.month_name[month]
 
-        # # shows the week and days
-        days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-        for day in days:
-            label = Label(text=day, font_size=12, size_hint_y=None, height=50)
-            self.add_widget(label)
+        self.greeting = Label(
+            text=f"{month_name} {year}",
+            font_size=12,
+            color=(1, 1, 1, 1)
+        )
+        self.layout.add_widget(self.greeting)
 
-        # create calendar days
-        for week in self.cal.monthdayscalendar(self.year, self.month):
-            for day in week:
-                if day != 0:
-                    button = Button(text=str(day), font_size=12, size_hint_y=None, height=50)
-                    button.bind(on_press=self.select_date)
-                    self.add_widget(button)
+        # Create buttons for each day in the month
+        self.day_buttons = []
+        for i in range(1, days_in_month + 1):
+            day = datetime.date(year, month, i)
+            day_of_week = calendar.day_name[day.weekday()]
+            day_button = Button(
+                text=f"{day_of_week} {i}",
+                background_color=(0, 0, 1, 1),
+                background_normal="",
+                on_press=self.on_day_button_click
+            )
+            day_button.bind(on_press=lambda instance, day=day: self.on_day_button_click(day))
+            self.layout.add_widget(day_button)
+            self.day_buttons.append(day_button)
 
-        # create reminder input
-        self.reminder_label = Label(text="Reminder: ")
-        self.add_widget(self.reminder_label)
-        self.reminder_entry = Label()
-        self.add_widget(self.reminder_entry)
+        self.button_1 = Button(
+            text="MainScreen",
+            size_hint=(1, 0.5),
+            bold=True,
+            background_color=("red"),
+            background_normal="",
+            on_press=self.on_button_1_click
+        )
+        self.layout.add_widget(self.button_1)
 
-    def select_date(self, instance):
-        # unselect previous date
-        if self.selected_date:
-            self.selected_date.background_color = [1,1,1,1]
+        self.button_2 = Button(
+            text="Sensor 1",
+            size_hint=(1, 0.5),
+            bold=True,
+            background_color=("red"),
+            background_normal="",
+            on_press=self.on_button_2_click
+        )
+        self.layout.add_widget(self.button_2)
 
-        # select new date
-        instance.background_color = [0.5,0.5,1,1]
-        day = int(instance.text)
-        self.selected_date = instance
+        self.button_3 = Button(
+            text="Sensor 2",
+            size_hint=(1, 0.5),
+            bold=True,
+            background_color=("red"),
+            background_normal="",
+            on_press=self.on_button_3_click
+        )
+        self.layout.add_widget(self.button_3)
 
-        # update header with selected date
-        date = calendar.date(self.year, self.month, day)
-        self.header.text = date.strftime("%A, %B %d, %Y")
+        self.add_widget(self.layout)
 
-        # show reminders for selected date
-        if self.selected_date in self.reminders:
-            reminder_text = "\n".join(self.reminders[self.selected_date])
-        else:
-            reminder_text = "No reminders"
-        self.reminder_label.text = f"Reminders for {date.strftime('%B %d, %Y')}:"
-        self.reminder_entry.text = reminder_text
+        # # Set environment variables for your credentials
+        # # Read more at http://twil.io/secure
+        # account_sid = "AC11df50ad48a78033121c05277ab51668"
+        # auth_token = ""
+        # self.client = Client(account_sid, auth_token)
 
-    def add_reminder(self):
-        if self.selected_date:
-            reminder = self.reminder_entry.text
-            if self.selected_date not in self.reminders:
-                self.reminders[self.selected_date] = []
-            self.reminders[self.selected_date].append(reminder)
-            self.select_date(self.selected_date)
+        # # Set the date and time to send the message
+        # hour = 15 # military time
+        # minute = 18
+        # send_date = datetime.datetime(2023, 4, 20, hour, minute, 0)
 
+        # # Wait until the specified date and time
+        # while datetime.datetime.now() < send_date:
+        #     pass
+
+        # self.message = self.client.messages.create(
+        #     body="Hello from The other side",
+        #     from_="+18449862899",
+        #     media_url=['https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg'],
+        #     to="+19857134658"
+        # )
+        # print(self.message.sid)
+
+    def on_day_button_click(self, instance):
+        print(f"Clicked on {instance.text}")
+
+    def on_button_1_click(self, instance):
+        app = App.get_running_app()
+        app.sm.current = "MainScreen"
+
+    def on_button_2_click(self, instance):
+        app = App.get_running_app()
+        app.sm.current = "Sensor 1"
+
+    def on_button_3_click(self, instance):
+        app = App.get_running_app()
+        app.sm.current = "Sensor 2"
 
 class SmartFridge(App):
     def build(self):
