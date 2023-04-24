@@ -1,0 +1,72 @@
+import math
+# global Constants to restrict the maximum x and y values
+from key import *
+MAX_X = WIDTH
+MAX_Y = HEIGHT
+
+class Move:
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+        self.size = 1
+
+    # getter for x 
+    @property
+    def x(self):
+        return self._x
+    
+    # setter for x
+    @x.setter
+    def x(self, value):
+        if value > MAX_X:
+            self._x = MAX_X
+        elif value < 0:
+            self._x = 0
+        else:
+            self._x = value
+
+    # getter for y
+    @property
+    def y(self):
+        return self._y
+    
+    # setter for y
+    @y.setter
+    def y(self, value):
+        if value > MAX_Y:
+            self._y = MAX_Y
+        elif value < 0:
+            self._y = 0
+        else:
+            self._y = value
+
+    # getter for size
+    @property
+    def size(self):
+        return self._size
+
+    # setter for size
+    @size.setter
+    def size(self, value):
+        if value >= 1:
+            self._size = value
+        else:
+            self._size = 1
+
+    def goLeft(self, value=1):
+        self.x -= value
+
+    def goRight(self, value=1):
+        self.x += value
+
+    def goUp(self, value=1):
+        self.y -= value
+
+    def goDown(self, value=1):
+        self.y += value
+
+    def getDistance(self, other):
+        dist = math.sqrt((other.x - self.x) ** 2 + (other.y - self.y) ** 2)
+        return dist
+    
+    
