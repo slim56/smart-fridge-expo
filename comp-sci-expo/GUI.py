@@ -5,9 +5,31 @@ from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import ScreenManager, Screen
-import datetime
 import calendar
+from kivy.clock import Clock
+import datetime
 from twilio.rest import Client
+
+class Reminder:
+    def __init__(self, selectedDate=datetime.datetime.now(), message=""):  # can i put the reminder class in the calendar class and go from there?
+        self.selectedDate = selectedDate
+        self.message = message
+        self.delay = (self.selectedDate - datetime.datetime.now()).total_seconds()
+
+    def send_message(self,dt):
+        account_sid = "AC11df50ad48a78033121c05277ab51668"
+        auth_token = "bc37f23d2ae02993f70c2c9115b3d2c2"
+        self.client = Client(account_sid, auth_token)
+
+        self.client.messages.create(
+            body=self.message,
+            from_="+18449862899",
+            media_url=['https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg'],
+            to="+19857134658")
+
+    def schedule_message(self):
+        Clock.schedule_once(self.send_message, self.delay)
+        # print(self.message.sid)
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
@@ -60,7 +82,8 @@ class MainScreen(Screen):
     def on_button_2_click(self, instance):
         app = App.get_running_app()
         app.sm.current = "Sensor 1"
-
+        # r1 = Reminder.__init__(self)
+        
     def on_button_3_click(self, instance):
         app = App.get_running_app()
         app.sm.current = "Sensor 2"
@@ -182,25 +205,20 @@ class Sensor2(Screen):
     def on_button_2_click(self, instance):
         app = App.get_running_app()
         app.sm.current = "Sensor 1"
+        # r1 = Reminder.__init__(self)
 
     def on_button_4_click(self, instance):
         app = App.get_running_app()
         app.sm.current = "Calendar"
 
-class Reminder:
-    def __init__(self, date, message):
-        self.date = date
-        self.message = message
 
-class calendarScreen(Screen):
-    # header = kyprops
-    # reminder_label = kyprops
-    # reminder_entry = kyprops
-    # selected_date = None
+# This class takes in the calendar class and uses the 
+# Twilio Api to make a calendar and sets reminders
+class calendarScreen(Screen, Reminder):
     reminders = {}
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        Screen.__init__(self, **kwargs)
         self.layout = GridLayout()
         self.layout.cols = 7
         self.layout.size_hint = (0.6, 0.7)
@@ -267,31 +285,16 @@ class calendarScreen(Screen):
 
         self.add_widget(self.layout)
 
-        # # Set environment variables for your credentials
-        # # Read more at http://twil.io/secure
-        # account_sid = "AC11df50ad48a78033121c05277ab51668"
-        # auth_token = ""
-        # self.client = Client(account_sid, auth_token)
-
-        # # Set the date and time to send the message
-        # hour = 15 # military time
-        # minute = 18
-        # send_date = datetime.datetime(2023, 4, 20, hour, minute, 0)
-
-        # # Wait until the specified date and time
-        # while datetime.datetime.now() < send_date:
-        #     pass
-
-        # self.message = self.client.messages.create(
-        #     body="Hello from The other side",
-        #     from_="+18449862899",
-        #     media_url=['https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg'],
-        #     to="+19857134658"
-        # )
-        # print(self.message.sid)
-
     def on_day_button_click(self, instance):
-        print(f"Clicked on {instance.text}")
+        print(f"Clicked on {instance}")
+        try:
+            year, month, day = str(instance).split("-")
+            selected_date = datetime.datetime(month=int(month), day=int(day), year=int(year), hour=20, minute=00)
+            print(selected_date)
+            r1 = Reminder(selectedDate=selected_date, message="")
+            r1.schedule_message()
+        except ValueError:
+            pass
 
     def on_button_1_click(self, instance):
         app = App.get_running_app()
@@ -305,6 +308,8 @@ class calendarScreen(Screen):
         app = App.get_running_app()
         app.sm.current = "Sensor 2"
 
+# This class takes the inputs of the buttons
+# And swaps through the screens
 class SmartFridge(App):
     def build(self):
         self.sm = ScreenManager()
