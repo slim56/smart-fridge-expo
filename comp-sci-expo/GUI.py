@@ -18,7 +18,7 @@ class Reminder:
 
     def send_message(self,dt):
         account_sid = "AC11df50ad48a78033121c05277ab51668"
-        auth_token = "bc37f23d2ae02993f70c2c9115b3d2c2"
+        auth_token = ""
         self.client = Client(account_sid, auth_token)
 
         self.client.messages.create(
