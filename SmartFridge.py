@@ -75,11 +75,46 @@ class Notification:
 
 expiration_date = ExpirationDate(2023, 4, 30)
 expiration_date.set_reminder()
-
 # expiration_date = input("Enter expiration date (YYYY-MM-DD): ")
 # expiration_date_str = datetime.datetime.strptime(expiration_date, '%Y-%m-%d').date()
 
 # expiration_date.set_reminder()
+
+while (True):
+    add_items = input("Are there any items you want to add to the fridge?")
+    if add_items in ["yes", "Y", "Yes", "indeed", "Indeed", "YES"]:
+        item = input("What is the name of your item")
+        possexper = input("Does this item expire")
+        if possexper in ["yes", "Y", "Yes", "indeed","y"]:
+            experdate = input(f"what is the expiration date of {item}")
+        endloop = input("Do you have any more items to add?")
+        if endloop in ["no", "NO", "No", "Nope"]:
+            break
+    else:
+        break
+
+valid_units = ['grams', 'kg', 'pounds', 'oz', 'g', 'gs', 'lbs', 'kilograms']  # valid units of measurement
+while True:
+    input_str = input("Enter item count or weight: ")
+    try:
+        # Try to parse a number from the input string
+        value = float(input_str.split()[0])
+        unit = input_str.split()[1].lower()  # Convert the unit to lowercase for consistency
+        if unit in valid_units:
+            print(f"Recorded weight: {value} {unit}")
+            break  # Exit the loop if input is valid
+        else:
+            print(f"Invalid unit of measurement: {unit}")
+    except:
+        # If parsing a number from the input string fails, assume it's an item count
+        try:
+            count = int(input_str)
+            print(f"Recorded count: {count}")
+            break  # Exit the loop if input is valid
+        except:
+            print("Invalid input. Please enter a number followed by a unit of measurement (e.g. 100 grams) or an item count.")
+
+
 
 
 
