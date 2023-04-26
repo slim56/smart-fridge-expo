@@ -10,27 +10,6 @@ from kivy.clock import Clock
 import datetime
 from twilio.rest import Client
 
-class Reminder:
-    def __init__(self, selectedDate=datetime.datetime.now(), message=""):  # can i put the reminder class in the calendar class and go from there?
-        self.selectedDate = selectedDate
-        self.message = message
-        self.delay = (self.selectedDate - datetime.datetime.now()).total_seconds()
-
-    def send_message(self,dt):
-        account_sid = "AC11df50ad48a78033121c05277ab51668"
-        auth_token = ""
-        self.client = Client(account_sid, auth_token)
-
-        self.client.messages.create(
-            body=self.message,
-            from_="+18449862899",
-            media_url=['https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg'],
-            to="+19857134658")
-
-    def schedule_message(self):
-        Clock.schedule_once(self.send_message, self.delay)
-        # print(self.message.sid)
-
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -214,7 +193,7 @@ class Sensor2(Screen):
 
 # This class takes in the calendar class and uses the 
 # Twilio Api to make a calendar and sets reminders
-class calendarScreen(Screen, Reminder):
+class calendarScreen(Screen):
     reminders = {}
 
     def __init__(self, **kwargs):
@@ -228,8 +207,10 @@ class calendarScreen(Screen, Reminder):
         now = datetime.datetime.now()
         year = now.year
         month = now.month
+        day = now.day
         days_in_month = calendar.monthrange(year, month)[1]
         month_name = calendar.month_name[month]
+        # selected_date = datetime.datetime(month=month, day=day, year=year, hour=20, minute=33)
 
         self.greeting = Label(
             text=f"{month_name} {year}",
@@ -245,13 +226,12 @@ class calendarScreen(Screen, Reminder):
             day_of_week = calendar.day_name[day.weekday()]
             day_button = Button(
                 text=f"{day_of_week} {i}",
-                background_color=(0, 0, 1, 1),
+                background_color=("blue"),
                 background_normal="",
                 on_press=self.on_day_button_click
             )
             day_button.bind(on_press=lambda instance, day=day: self.on_day_button_click(day))
             self.layout.add_widget(day_button)
-            self.day_buttons.append(day_button)
 
         self.button_1 = Button(
             text="MainScreen",
@@ -285,14 +265,25 @@ class calendarScreen(Screen, Reminder):
 
         self.add_widget(self.layout)
 
+    def send_message(self, dt):
+    # with the rest of code
+        account_sid = "AC11df50ad48a78033121c05277ab51668"
+        auth_token = "98b7ff75bf02c982f6e3ac3e49ab24cd"
+        self.client = Client(account_sid, auth_token)
+
+        self.client.messages.create(
+            body="Hello from The other side",
+            from_="+18449862899",
+            media_url=['https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg'],
+            to="+19857134658")
+
     def on_day_button_click(self, instance):
-        print(f"Clicked on {instance}")
         try:
             year, month, day = str(instance).split("-")
-            selected_date = datetime.datetime(month=int(month), day=int(day), year=int(year), hour=20, minute=00)
+            selected_date = datetime.datetime(month=int(month), day=int(day), year=int(year), hour=14, minute=10)
+            self.delay = (selected_date - datetime.datetime.now()).total_seconds()
             print(selected_date)
-            r1 = Reminder(selectedDate=selected_date, message="")
-            r1.schedule_message()
+            Clock.schedule_once(self.send_message, self.delay)
         except ValueError:
             pass
 
