@@ -225,7 +225,7 @@ class calendarScreen(Screen):
             day = datetime.date(year, month, i)
             day_of_week = calendar.day_name[day.weekday()]
             day_button = Button(
-                text=f"{day_of_week} {i}",
+                text=f"{day_of_week}\n{i}",
                 background_color=("blue"),
                 background_normal="",
                 on_press=self.on_day_button_click
