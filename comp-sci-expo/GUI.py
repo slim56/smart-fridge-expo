@@ -200,7 +200,7 @@ class calendarScreen(Screen):
         Screen.__init__(self, **kwargs)
         self.layout = GridLayout()
         self.layout.cols = 7
-        self.layout.size_hint = (0.6, 0.7)
+        self.layout.size_hint = (0.8, 0.8)
         self.layout.pos_hint = {"center_x": 0.5, "center_y": 0.5}
         self.layout.spacing = [4,4]
 
