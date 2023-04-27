@@ -268,7 +268,7 @@ class calendarScreen(Screen):
     def send_message(self, dt):
     # with the rest of code
         account_sid = "AC11df50ad48a78033121c05277ab51668"
-        auth_token = "98b7ff75bf02c982f6e3ac3e49ab24cd"
+        auth_token = "" # ask me for the code
         self.client = Client(account_sid, auth_token)
 
         self.client.messages.create(
