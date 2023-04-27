@@ -1,14 +1,15 @@
-from kivy.app import App
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.label import Label
-from kivy.uix.image import Image
-from kivy.uix.button import Button
-from kivy.uix.textinput import TextInput
-from kivy.uix.screenmanager import ScreenManager, Screen
 import calendar
-from kivy.clock import Clock
 import datetime
+from kivy.app import App
+from kivy.clock import Clock
 from twilio.rest import Client
+from kivy.uix.image import Image
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+# from kivy.uix.textinput import TextInput
+from kivy.uix.gridlayout import GridLayout
+# from kivymd.uix.pickers import MDTimePicker
+from kivy.uix.screenmanager import ScreenManager, Screen
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
@@ -191,10 +192,9 @@ class Sensor2(Screen):
         app.sm.current = "Calendar"
 
 
-# This class takes in the calendar class and uses the 
+# This class takes in the calendar class and uses the
 # Twilio Api to make a calendar and sets reminders
 class calendarScreen(Screen):
-    reminders = {}
 
     def __init__(self, **kwargs):
         Screen.__init__(self, **kwargs)
@@ -207,15 +207,14 @@ class calendarScreen(Screen):
         now = datetime.datetime.now()
         year = now.year
         month = now.month
-        day = now.day
         days_in_month = calendar.monthrange(year, month)[1]
         month_name = calendar.month_name[month]
-        # selected_date = datetime.datetime(month=month, day=day, year=year, hour=20, minute=33)
 
         self.greeting = Label(
-            text=f"{month_name} {year}",
+            text=f"{month_name} \n {year}",
+            bold=True,
             font_size=12,
-            color=(1, 1, 1, 1)
+            color=("white")
         )
         self.layout.add_widget(self.greeting)
 
@@ -225,7 +224,7 @@ class calendarScreen(Screen):
             day = datetime.date(year, month, i)
             day_of_week = calendar.day_name[day.weekday()]
             day_button = Button(
-                text=f"{day_of_week}\n{i}",
+                text=f"{day_of_week} \n{i}",
                 background_color=("blue"),
                 background_normal="",
                 on_press=self.on_day_button_click
@@ -265,25 +264,29 @@ class calendarScreen(Screen):
 
         self.add_widget(self.layout)
 
+    def schedule(self, selected_date):
+        self.delay = (selected_date - datetime.datetime.now()).total_seconds()
+        Clock.schedule_once(self.send_message, self.delay)
+
     def send_message(self, dt):
-    # with the rest of code
         account_sid = "AC11df50ad48a78033121c05277ab51668"
-        auth_token = "" # ask me for the code
+        auth_token = ""
         self.client = Client(account_sid, auth_token)
 
         self.client.messages.create(
-            body="Hello from The other side",
+            body="Your Food has expired",
             from_="+18449862899",
-            media_url=['https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg'],
-            to="+19857134658")
+            to="+19857134658"
+            )
 
     def on_day_button_click(self, instance):
         try:
             year, month, day = str(instance).split("-")
-            selected_date = datetime.datetime(month=int(month), day=int(day), year=int(year), hour=14, minute=10)
-            self.delay = (selected_date - datetime.datetime.now()).total_seconds()
+            selected_date = datetime.datetime(month=int(month), day=int(day), year=int(year), hour=0, minute=0)
             print(selected_date)
-            Clock.schedule_once(self.send_message, self.delay)
+            self.schedule(selected_date)
+            # Change the background color of the button to green
+            # instance.background_color = ("green")
         except ValueError:
             pass
 
@@ -313,6 +316,10 @@ class SmartFridge(App):
         self.sm.add_widget(self.Sensor_2)
         self.sm.add_widget(self.Calendar)
         return self.sm
+
+
+if __name__ == "__main__":
+    SmartFridge().run()
 
 
 if __name__ == "__main__":
