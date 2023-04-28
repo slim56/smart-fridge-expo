@@ -350,6 +350,3 @@ class SmartFridge(App):
 
 if __name__ == "__main__":
     SmartFridge().run()
-
-if __name__ == "__main__":
-    SmartFridge().run()
