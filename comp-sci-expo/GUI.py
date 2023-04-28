@@ -29,7 +29,7 @@ class MainScreen(Screen):
         self.layout.add_widget(Image(source="SMART FRIDGE.PNG"))
 
         self.button_2 = Button(
-            text="Sensor 1",
+            text="Weight Sensor 1",
             size_hint=(1, 0.5),
             bold=True,
             background_color="red",
@@ -39,7 +39,7 @@ class MainScreen(Screen):
         self.layout.add_widget(self.button_2)
 
         self.button_3 = Button(
-            text="Sensor 2",
+            text="Weight Sensor 2",
             size_hint=(1, 0.5),
             bold=True,
             background_color="red",
@@ -62,12 +62,12 @@ class MainScreen(Screen):
 
     def on_button_2_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Sensor 1"
+        app.sm.current = "Weight Sensor 1"
         # r1 = Reminder.__init__(self)
         
     def on_button_3_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Sensor 2"
+        app.sm.current = "Weight Sensor 2"
 
     def on_button_4_click(self, instance):
         app = App.get_running_app()
@@ -81,7 +81,7 @@ class Sensor1(Screen):
         self.layout.size_hint = (0.6, 0.7)
         self.layout.pos_hint = {"center_x":0.5, "center_y": 0.5}
         self.greeting = Label(
-            text="Info for Sensor 1!",
+            text="Info for Weight Sensor 1!",
             font_size=18,
             color="white"
         )
@@ -99,7 +99,7 @@ class Sensor1(Screen):
         self.layout.add_widget(self.button_1)
 
         self.button_3 = Button(
-            text="Sensor 2",
+            text="Weight Sensor 2",
             size_hint=(1, 0.5),
             bold=True,
             background_color="red",
@@ -126,7 +126,7 @@ class Sensor1(Screen):
 
     def on_button_3_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Sensor 2"
+        app.sm.current = "Weight Sensor 2"
 
     def on_button_4_click(self, instance):
         app = App.get_running_app()
@@ -140,7 +140,7 @@ class Sensor2(Screen):
         self.layout.size_hint = (0.6, 0.7)
         self.layout.pos_hint = {"center_x":0.5, "center_y": 0.5}
         self.greeting = Label(
-            text="Info for Sensor 2!",
+            text="Info for Weight Sensor 2!",
             font_size=18,
             color="white"
         )
@@ -158,7 +158,7 @@ class Sensor2(Screen):
         self.layout.add_widget(self.button_1)
 
         self.button_2 = Button(
-            text="Sensor 1",
+            text="Weight Sensor 1",
             size_hint=(1, 0.5),
             bold=True,
             background_color="red",
@@ -185,7 +185,7 @@ class Sensor2(Screen):
 
     def on_button_2_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Sensor 1"
+        app.sm.current = "Weight Sensor 1"
         # r1 = Reminder.__init__(self)
 
     def on_button_4_click(self, instance):
@@ -244,7 +244,7 @@ class calendarScreen(Screen):
         self.layout.add_widget(self.button_1)
 
         self.button_2 = Button(
-            text="Sensor 1",
+            text="Weight Sensor 1",
             size_hint=(1, 0.5),
             bold=True,
             background_color=("red"),
@@ -254,7 +254,7 @@ class calendarScreen(Screen):
         self.layout.add_widget(self.button_2)
 
         self.button_3 = Button(
-            text="Sensor 2",
+            text="Weight Sensor 2",
             size_hint=(1, 0.5),
             bold=True,
             background_color=("red"),
@@ -308,7 +308,7 @@ class calendarScreen(Screen):
             button_2 = Button(text="Cancel", size_hint_y=0.5)
 
             # Bind the button to call the schedule method with the selected time
-            button.bind(on_press=lambda *args: (self.schedule(selected_date, datetime.datetime.strptime(input_box.text, '%H:%M').time())))
+            button.bind(on_press=lambda *args: (self.schedule(selected_date, datetime.datetime.strptime(input_box.text, '%H:%M').time()), popup.dismiss()))
             button_2.bind(on_press=popup.dismiss)
             # Add the widgets to the popup and display it
             popup.content = BoxLayout(orientation='vertical')
@@ -326,11 +326,13 @@ class calendarScreen(Screen):
 
     def on_button_2_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Sensor 1"
+        app.sm.current = "Weight Sensor 1"
 
     def on_button_3_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Sensor 2"
+        app.sm.current = "Weight Sensor 2"
+
+    
 
 # This class takes the inputs of the buttons
 # And swaps through the screens
@@ -338,8 +340,8 @@ class SmartFridge(App):
     def build(self):
         self.sm = ScreenManager()
         self.main_screen = MainScreen(name="MainScreen")
-        self.Sensor_1 = Sensor1(name="Sensor 1")
-        self.Sensor_2 = Sensor2(name="Sensor 2")
+        self.Sensor_1 = Sensor1(name="Weight Sensor 1")
+        self.Sensor_2 = Sensor2(name="Weight Sensor 2")
         self.Calendar = calendarScreen(name="Calendar")
         self.sm.add_widget(self.main_screen)
         self.sm.add_widget(self.Sensor_1)
