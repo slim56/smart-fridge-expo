@@ -3,12 +3,13 @@ import datetime
 from kivy.app import App
 from kivy.clock import Clock
 from twilio.rest import Client
+from kivy.uix.popup import Popup
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.button import Button
-# from kivy.uix.textinput import TextInput
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
 from kivy.uix.gridlayout import GridLayout
-# from kivymd.uix.pickers import MDTimePicker
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 class MainScreen(Screen):
@@ -264,9 +265,13 @@ class calendarScreen(Screen):
 
         self.add_widget(self.layout)
 
-    def schedule(self, selected_date):
-        self.delay = (selected_date - datetime.datetime.now()).total_seconds()
-        Clock.schedule_once(self.send_message, self.delay)
+    def schedule(self, selected_date, notification_time):
+        # Calculate the delay until the notification time
+        notification_datetime = datetime.datetime.combine(selected_date.date(), notification_time)
+        delay = (notification_datetime - datetime.datetime.now()).total_seconds()
+
+        # Schedule the message to be sent after the delay
+        Clock.schedule_once(self.send_message, delay)
 
     def send_message(self, dt):
         account_sid = "AC11df50ad48a78033121c05277ab51668"
@@ -283,10 +288,35 @@ class calendarScreen(Screen):
         try:
             year, month, day = str(instance).split("-")
             selected_date = datetime.datetime(month=int(month), day=int(day), year=int(year), hour=0, minute=0)
-            print(selected_date)
-            self.schedule(selected_date)
-            # Change the background color of the button to green
-            # instance.background_color = ("green")
+
+            # Create a popup to ask for the notification time
+            popup = Popup(title='Experation Time',
+                          size_hint=(None, None), size=(400, 200))
+            label = Label(
+                text='Enter the Experation Date (hh:mm):',
+                pos_hint={"center_x": 0.5, "center_y": 0.5}          
+                          )
+
+            # Define a custom input filter function that allows digits and colons
+            def input_filter(value, from_undo):
+                if value.isdigit() or value == ":":
+                    return value
+                return ""
+            
+            input_box = TextInput(multiline=False, input_filter=input_filter, size_hint_y=0.5)
+            button = Button(text='OK', size_hint_y=0.5)
+            button_2 = Button(text="Cancel", size_hint_y=0.5)
+
+            # Bind the button to call the schedule method with the selected time
+            button.bind(on_press=lambda *args: (self.schedule(selected_date, datetime.datetime.strptime(input_box.text, '%H:%M').time())))
+            button_2.bind(on_press=popup.dismiss)
+            # Add the widgets to the popup and display it
+            popup.content = BoxLayout(orientation='vertical')
+            popup.content.add_widget(label)
+            popup.content.add_widget(input_box)
+            popup.content.add_widget(button)
+            popup.content.add_widget(button_2)
+            popup.open()
         except ValueError:
             pass
 
@@ -320,7 +350,6 @@ class SmartFridge(App):
 
 if __name__ == "__main__":
     SmartFridge().run()
-
 
 if __name__ == "__main__":
     SmartFridge().run()
