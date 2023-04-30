@@ -17,3 +17,8 @@ message = client.messages.create(
   to= str(Phone_numbers)
 )
 print(message.sid)
+
+
+
+python -m pip install docutils pygments pypiwin32 kivy.deps.sdl2 kivy.deps.glew
+python -m pip install kivy.deps.gstreamer
