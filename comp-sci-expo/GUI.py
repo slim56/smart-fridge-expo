@@ -176,7 +176,6 @@ class Sensor2(Screen):
             color="white"
         )
         self.layout.add_widget(self.sensor_2)
-        # self.layout.add_widget(Image(source="SMART FRIDGE.PNG"))
 
         self.button_1 = Button(
             text="MainScreen",
@@ -275,16 +274,6 @@ class calendarScreen(Screen):
         # Add the header layout and the existing GridLayout to the main layout
         main_layout.add_widget(header_layout)
         main_layout.add_widget(self.layout)
-        
-        # Add the main layout to the screen
-        self.add_widget(main_layout)
-
-        # # Create a new GridLayout for the title
-        # title_layout = GridLayout(cols=1, size_hint=(0.5, 0.2))
-        # title_layout.add_widget(Label(text=f"{month_name} {year}", font_size=20, bold=True))
-
-        # # Add the new GridLayout to the main layout
-        # self.layout.add_widget(title_layout)
 
         # Create buttons for each day in the month
         self.day_buttons = []
@@ -340,7 +329,7 @@ class calendarScreen(Screen):
         )
         self.layout.add_widget(self.close)
 
-        # self.add_widget(self.layout)
+        self.add_widget(main_layout)
 
     def schedule(self, selected_date, notification_time):
         # Calculate the delay until the notification time
@@ -369,20 +358,17 @@ class calendarScreen(Screen):
 
             # Create a popup to ask for the notification time
             popup = Popup(title='Experation Time',
-                          size_hint=(None, None), size=(600, 400))
+                          size_hint=(None, None), size=(600, 400)
+            )
             label = Label(
                 text='Enter Reminder Time and Name\n Millitary Time Ex:(14:30)',
                 pos_hint={"center_x": 0.5, "center_y": 0.5}          
-                          )
+            )
 
             # Define a custom input filter function that allows digits and colons
-            def input_time(self, value, from_undo):
+            def input_time(value, from_undo):
                 if value.isdigit() or value == ":":
                     return value
-                return ""
-            def input_event(self, value, from_undo):
-                if value.isalpha():
-                    return
                 return ""
             
             # input_box = TextInput(multiline=False, input_filter=input_event, size_hint_y=0.5)
