@@ -16,7 +16,7 @@ class MainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.layout = GridLayout()
-        self.layout.cols = 1
+        self.layout.cols = 2
         self.layout.size_hint = (0.6, 0.7)
         self.layout.pos_hint = {"center_x":0.5, "center_y": 0.5}
         self.layout.spacing = [1,2]
@@ -31,7 +31,7 @@ class MainScreen(Screen):
         self.layout.add_widget(Image(source="SMART FRIDGE.PNG"))
 
         self.button_2 = Button(
-            text="Weight Sensor 1",
+            text="Sensor 1",
             size_hint=(1, 0.5),
             bold=True,
             background_color="red",
@@ -41,7 +41,7 @@ class MainScreen(Screen):
         self.layout.add_widget(self.button_2)
 
         self.button_3 = Button(
-            text="Weight Sensor 2",
+            text="Sensor 2",
             size_hint=(1, 0.5),
             bold=True,
             background_color="red",
@@ -74,11 +74,11 @@ class MainScreen(Screen):
 
     def on_button_2_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Weight Sensor 1"
+        app.sm.current = "Sensor 1"
         
     def on_button_3_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Weight Sensor 2"
+        app.sm.current = "Sensor 2"
 
     def on_button_4_click(self, instance):
         app = App.get_running_app()
@@ -86,23 +86,30 @@ class MainScreen(Screen):
 
     def on_close_click(self, instance):
         App.get_running_app().stop()
+
 class Sensor1(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.layout = GridLayout()
-        self.layout.cols = 1
+        self.layout.cols = 2
         self.layout.size_hint = (0.6, 0.7)
         self.layout.pos_hint = {"center_x":0.5, "center_y": 0.5}
         self.layout.spacing = [1,2]
 
-        self.greeting = Label(
-            text="Weight 1: Weight will be displayed  ",
+        self.weight = Label(
+            text=f"Weight 1: ",
             font_size=18,
             color="white"
         )
-        self.layout.add_widget(self.greeting)
-        # self.layout.add_widget(Image(source="SMART FRIDGE.PNG"))
+        self.layout.add_widget(self.weight)
 
+        self.display = Label(
+            text=f"Weight will be displayed",
+            font_size=18,
+            color="white"
+        )
+        self.layout.add_widget(self.display)
+        
         self.button_1 = Button(
             text="MainScreen",
             size_hint=(1, 0.5),
@@ -114,7 +121,7 @@ class Sensor1(Screen):
         self.layout.add_widget(self.button_1)
 
         self.button_3 = Button(
-            text="Weight Sensor 2",
+            text="Sensor 2",
             size_hint=(1, 0.5),
             bold=True,
             background_color="red",
@@ -152,7 +159,7 @@ class Sensor1(Screen):
 
     def on_button_3_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Weight Sensor 2"
+        app.sm.current = "Sensor 2"
 
     def on_button_4_click(self, instance):
         app = App.get_running_app()
@@ -165,17 +172,24 @@ class Sensor2(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.layout = GridLayout()
-        self.layout.cols = 1
+        self.layout.cols = 2
         self.layout.size_hint = (0.6, 0.7)
         self.layout.pos_hint = {"center_x":0.5, "center_y": 0.5}
         self.layout.spacing = [1,2]
 
-        self.sensor_2 = Label(
-            text="Weight 2: Weight will be displayed",
+        self.weight = Label(
+            text=f"Weight 2: ",
             font_size=18,
             color="white"
         )
-        self.layout.add_widget(self.sensor_2)
+        self.layout.add_widget(self.weight)
+
+        self.display = Label(
+            text=f"Weight will be displayed",
+            font_size=18,
+            color="white"
+        )
+        self.layout.add_widget(self.display)
 
         self.button_1 = Button(
             text="MainScreen",
@@ -188,7 +202,7 @@ class Sensor2(Screen):
         self.layout.add_widget(self.button_1)
 
         self.button_2 = Button(
-            text="Weight Sensor 1",
+            text="Sensor 1",
             size_hint=(1, 0.5),
             bold=True,
             background_color="red",
@@ -225,7 +239,7 @@ class Sensor2(Screen):
 
     def on_button_2_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Weight Sensor 1"
+        app.sm.current = "Sensor 1"
         # r1 = Reminder.__init__(self)
 
     def on_button_4_click(self, instance):
@@ -234,6 +248,7 @@ class Sensor2(Screen):
     
     def on_close_click(self, instance):
         App.get_running_app().stop()
+
 # This class takes in the calendar class and uses the
 # Twilio Api to make a calendar and sets reminders
 class calendarScreen(Screen):
@@ -284,7 +299,9 @@ class calendarScreen(Screen):
                 text=f"{day_of_week} \n{i}",
                 background_color=("blue"),
                 background_normal="",
-                on_press=self.on_day_button_click
+                on_press=self.on_day_button_click,
+                halign="center",
+                valign="center"
             )
             day_button.bind(on_press=lambda instance, day=day: self.on_day_button_click(day))
             self.layout.add_widget(day_button)
@@ -292,7 +309,6 @@ class calendarScreen(Screen):
         self.button_1 = Button(
             text="MainScreen",
             size_hint=(1, 0.5),
-            bold=True,
             background_color=("red"),
             background_normal="",
             on_press=self.on_button_1_click
@@ -300,9 +316,8 @@ class calendarScreen(Screen):
         self.layout.add_widget(self.button_1)
 
         self.button_2 = Button(
-            text="Weight Sensor 1",
+            text="Sensor 1",
             size_hint=(1, 0.5),
-            bold=True,
             background_color=("red"),
             background_normal="",
             on_press=self.on_button_2_click
@@ -310,9 +325,8 @@ class calendarScreen(Screen):
         self.layout.add_widget(self.button_2)
 
         self.button_3 = Button(
-            text="Weight Sensor 2",
+            text="Sensor 2",
             size_hint=(1, 0.5),
-            bold=True,
             background_color=("red"),
             background_normal="",
             on_press=self.on_button_3_click
@@ -322,7 +336,6 @@ class calendarScreen(Screen):
         self.close = Button(
             text="Close",
             size_hint=(1, 0.5),
-            bold=True,
             background_color="red",
             background_normal="",
             on_press=self.on_close_click
@@ -358,10 +371,10 @@ class calendarScreen(Screen):
 
             # Create a popup to ask for the notification time
             popup = Popup(title='Experation Time',
-                          size_hint=(None, None), size=(600, 400)
+                          size_hint=(None, None), size=(400, 250)
             )
             label = Label(
-                text='Enter Reminder Time and Name\n Millitary Time Ex:(14:30)',
+                text='Enter Reminder Time \n Millitary Time Ex:(14:30)',
                 pos_hint={"center_x": 0.5, "center_y": 0.5}          
             )
 
@@ -384,7 +397,7 @@ class calendarScreen(Screen):
             popup.content.add_widget(label)
             # popup.content.add_widget(Label(text='Enter Name of Event', size_hint_y=None, height=20))
             # popup.content.add_widget(input_box)
-            popup.content.add_widget(Label(text='Enter Time of Event:', size_hint_y=None, height=30))
+            popup.content.add_widget(Label(text='Enter Time of Event:', size_hint_y=None, height=20))
             popup.content.add_widget(input_box_2)
             popup.content.add_widget(button)
             popup.content.add_widget(button_2)
@@ -398,11 +411,11 @@ class calendarScreen(Screen):
 
     def on_button_2_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Weight Sensor 1"
+        app.sm.current = "Sensor 1"
 
     def on_button_3_click(self, instance):
         app = App.get_running_app()
-        app.sm.current = "Weight Sensor 2"
+        app.sm.current = "Sensor 2"
 
     def on_close_click(self, instance):
         App.get_running_app().stop()
@@ -413,8 +426,8 @@ class SmartFridge(App):
     def build(self):
         self.sm = ScreenManager()
         self.main_screen = MainScreen(name="MainScreen")
-        self.Sensor_1 = Sensor1(name="Weight Sensor 1")
-        self.Sensor_2 = Sensor2(name="Weight Sensor 2")
+        self.Sensor_1 = Sensor1(name="Sensor 1")
+        self.Sensor_2 = Sensor2(name="Sensor 2")
         self.Calendar = calendarScreen(name="Calendar")
         self.sm.add_widget(self.main_screen)
         self.sm.add_widget(self.Sensor_1)
@@ -422,7 +435,6 @@ class SmartFridge(App):
         self.sm.add_widget(self.Calendar)
 
         return self.sm
-
 
 if __name__ == "__main__":
     SmartFridge().run()
