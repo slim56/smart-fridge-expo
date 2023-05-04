@@ -11,7 +11,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
-
+import hx711
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -435,6 +435,111 @@ class SmartFridge(App):
         self.sm.add_widget(self.Calendar)
 
         return self.sm
+    
+def get_weight1():
+    hx711 = HX711(
+        dout_pin = 17,
+        pd_sck_pin = 16,
+        channel = 'B',
+        gain = 32
+        )
+#1326
+    hx711.reset()
+    measures = hx711.get_raw_data(times=100)
+    '''
+    for i in range (5):
+        if measures[i]<measures[0]:
+            while measures[i]<measures[0]:
+                measures[i] = measures[i]+ 1
+                 '''
+    kw = int(input("Enter known weight: "))
+    calb_factor = []
+    for measure in measures:
+        calb_factor.append(((measure/206)))
+
+    calb_factor = ((sum(calb_factor))/(len(calb_factor)))
+    #print((int(calb_factor)))
+    
+    fir = (( (sum((hx711.get_raw_data(times= 5)))/5))/calb_factor)
+    #sec = (( (sum(hx711.get_raw_data(times= 20)))/20)/calb_factor)
+    gap = fir
+    #if (fir< kw):
+        #fir = fir+(gap-kw)
+    kawa = fir-kw
+    if((fir-kw)<0):
+        finalfir = 0
+            
+    if ((fir-kw)>0):
+         finalfir = fir-kw
+    #print(((fir)))#+sec)/2))
+    hx711.reset()
+
+    if (finalfir)>300:
+        strfir = "High"
+
+    if (finalfir)<300:
+        strfir = "Low"
+        if (finalfir)==0:
+            strfir = "Zero"
+        
+    #print(hx711.get_raw_data(times=2))
+    #sleep(2)
+    return strfir
+
+def get_weight2():
+    hx711 = HX711(
+        dout_pin = 17,
+        pd_sck_pin = 16,
+        channel = 'B',
+        gain = 32
+        )
+#1326
+    hx711.reset()
+    measures = hx711.get_raw_data(times=100)
+    '''
+    for i in range (5):
+        if measures[i]<measures[0]:
+            while measures[i]<measures[0]:
+                measures[i] = measures[i]+ 1
+                 '''
+    kw = int(input("Enter known weight: "))
+    calb_factor = []
+    for measure in measures:
+        calb_factor.append(((measure/206)))
+
+    calb_factor = ((sum(calb_factor))/(len(calb_factor)))
+    #print((int(calb_factor)))
+    
+    fir = (( (sum((hx711.get_raw_data(times= 5)))/5))/calb_factor)
+    #sec = (( (sum(hx711.get_raw_data(times= 20)))/20)/calb_factor)
+    gap = fir
+    #if (fir< kw):
+        #fir = fir+(gap-kw)
+    kawa = fir-kw
+    if((fir-kw)<0):
+        finalfir = 0
+            
+    if ((fir-kw)>0):
+         finalfir = fir-kw
+    #print(((fir)))#+sec)/2))
+    hx711.reset()
+
+    if (finalfir)>300:
+        strfir = "High"
+
+    if (finalfir)<300:
+        strfir = "Low"
+        if (finalfir)==0:
+            strfir = "Zero"
+        
+    #print(hx711.get_raw_data(times=2))
+    #sleep(2)
+    return strfir
+
+z = get_weight1()
+m = get_weight2()
+print(z)
+print(m)
 
 if __name__ == "__main__":
     SmartFridge().run()
